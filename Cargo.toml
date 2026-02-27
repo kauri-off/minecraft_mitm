@@ -1,0 +1,21 @@
+[package]
+name = "minecraft_mitm"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/kauri-off/minecraft_mitm"
+homepage = "https://github.com/kauri-off/minecraft_mitm"
+description = "A Minecraft man-in-the-middle proxy for inspecting and logging packets."
+keywords = ["minecraft", "proxy", "mitm", "network"]
+categories = ["network-programming", "command-line-utilities"]
+
+[dependencies]
+clap = { version = "4.5.60", features = ["derive"] }
+minecraft_protocol = { git = "https://github.com/kauri-off/minecraft_protocol.git", features = ["async", "compression"], default-features = false }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.149"
+tokio = { version = "1.49.0", features = ["full"] }
+tracing = "0.1.44"
+tracing-subscriber = "0.3.22"
+uuid = { version = "1.21.0", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
