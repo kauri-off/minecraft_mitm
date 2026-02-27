@@ -32,7 +32,7 @@ pub mod p774 {
         #[packet(0x00)]
         pub struct LoginStart {
             pub name: String,
-            pub uuid: Option<Uuid>,
+            pub uuid: Uuid,
         }
     }
 
