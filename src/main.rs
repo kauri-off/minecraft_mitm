@@ -28,7 +28,7 @@ use tokio::{
 use tracing::{error, info};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt};
 
-use crate::packets::p767::{c2s, s2c};
+use crate::packets::p774::{c2s, s2c};
 
 mod packets;
 
@@ -175,6 +175,7 @@ async fn handle_login(
     handshake: c2s::Handshake,
     dump_file: Option<DumpFile>,
 ) {
+    info!(protocol = handshake.protocol_version.0);
     let mut server_stream = TcpStream::connect(&args.connect_addr).await.unwrap();
 
     let handshake = c2s::Handshake {
@@ -190,15 +191,20 @@ async fn handle_login(
         .await
         .unwrap();
 
-    let login_start: c2s::LoginStart = RawPacket::read_async(&mut client_stream)
+    let packet = RawPacket::read_async(&mut client_stream)
         .await
         .unwrap()
         .as_uncompressed()
-        .unwrap()
-        .deserialize_payload()
         .unwrap();
 
-    info!(login_start.name);
+    info!(
+        direction = format!("{:?}", Dir::ServerBound),
+        packet_id = packet.packet_id,
+        length = packet.payload.len(),
+        payload = format!("{:?}", packet.payload)
+    );
+
+    let login_start: c2s::LoginStart = packet.deserialize_payload().unwrap();
 
     UncompressedPacket::from_packet(&login_start)
         .unwrap()
@@ -215,7 +221,12 @@ async fn handle_login(
             .uncompress(threshold)
             .unwrap();
 
-        info!(packet.packet_id);
+        info!(
+            direction = format!("{:?}", Dir::ClientBound),
+            packet_id = packet.packet_id,
+            length = packet.payload.len(),
+            payload = format!("{:?}", packet.payload)
+        );
 
         match packet.packet_id {
             s2c::LoginDisconnect::PACKET_ID => {
@@ -236,7 +247,6 @@ async fn handle_login(
                 let compression: s2c::SetCompression = packet.deserialize_payload().unwrap();
                 threshold = Some(compression.threshold.0);
                 packet.write_async(&mut client_stream).await.unwrap();
-                info!("Threshold: {}", compression.threshold.0);
             }
             s2c::LoginFinished::PACKET_ID => {
                 packet

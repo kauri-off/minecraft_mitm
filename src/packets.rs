@@ -1,4 +1,4 @@
-pub mod p767 {
+pub mod p774 {
     use minecraft_protocol::{Packet, varint::VarInt};
 
     pub mod c2s {
@@ -32,7 +32,7 @@ pub mod p767 {
         #[packet(0x00)]
         pub struct LoginStart {
             pub name: String,
-            pub uuid: Uuid,
+            pub uuid: Option<Uuid>,
         }
     }
 
