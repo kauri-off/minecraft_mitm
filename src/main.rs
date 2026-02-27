@@ -204,13 +204,7 @@ async fn handle_login(
         payload = format!("{:?}", packet.payload)
     );
 
-    let login_start: c2s::LoginStart = packet.deserialize_payload().unwrap();
-
-    UncompressedPacket::from_packet(&login_start)
-        .unwrap()
-        .write_async(&mut server_stream)
-        .await
-        .unwrap();
+    packet.write_async(&mut server_stream).await.unwrap();
 
     let mut threshold: Option<i32> = None;
 

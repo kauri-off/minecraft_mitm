@@ -2,8 +2,6 @@ pub mod p774 {
     use minecraft_protocol::{Packet, varint::VarInt};
 
     pub mod c2s {
-        use uuid::Uuid;
-
         use super::*;
         // ----------- HANDSHAKING -----------
         #[derive(Packet, Debug)]
@@ -26,19 +24,9 @@ pub mod p774 {
         pub struct PingRequest {
             pub timestamp: i64,
         }
-
-        // ----------- LOGIN -----------
-        #[derive(Packet, Debug)]
-        #[packet(0x00)]
-        pub struct LoginStart {
-            pub name: String,
-            pub uuid: Uuid,
-        }
     }
 
     pub mod s2c {
-        use uuid::Uuid;
-
         use super::*;
 
         // ----------- STATUS -----------
@@ -57,20 +45,11 @@ pub mod p774 {
 
         #[derive(Packet, Debug)]
         #[packet(0x01)]
-        pub struct EncryptionRequest {
-            pub server_id: String,
-            pub public_key: Vec<u8>,
-            pub verify_token: Vec<u8>,
-            pub should_authenticate: bool,
-        }
+        pub struct EncryptionRequest {}
 
         #[derive(Packet, Debug)]
         #[packet(0x02)]
-        pub struct LoginFinished {
-            pub uuid: Uuid,
-            pub username: String,
-            pub properties: Vec<u8>,
-        }
+        pub struct LoginFinished {}
 
         #[derive(Packet, Debug)]
         #[packet(0x03)]
