@@ -52,13 +52,13 @@ struct Args {
     #[arg(long)]
     connect_addr: String,
 
-    /// Server address written into the forwarded handshake packet
+    /// Server address written into the forwarded handshake packet (defaults to host from connect_addr)
     #[arg(long)]
-    handshake_ip: String,
+    handshake_ip: Option<String>,
 
-    /// Server port written into the forwarded handshake packet
+    /// Server port written into the forwarded handshake packet (defaults to port from connect_addr)
     #[arg(long)]
-    handshake_port: i32,
+    handshake_port: Option<i32>,
 
     /// Log clientbound (server → client) packets to stdout
     #[arg(long)]
@@ -178,10 +178,21 @@ async fn handle_login(
     info!(protocol = handshake.protocol_version.0);
     let mut server_stream = TcpStream::connect(&args.connect_addr).await.unwrap();
 
+    let (derived_ip, derived_port_str) = args
+        .connect_addr
+        .rsplit_once(':')
+        .expect("connect_addr must be in host:port format");
+    let derived_port: u16 = derived_port_str
+        .parse()
+        .expect("connect_addr port must be a valid number");
+
+    let server_address = args.handshake_ip.unwrap_or_else(|| derived_ip.to_string());
+    let server_port = args.handshake_port.map(|p| p as u16).unwrap_or(derived_port);
+
     let handshake = c2s::Handshake {
         protocol_version: handshake.protocol_version,
-        server_address: args.handshake_ip,
-        server_port: args.handshake_port as u16,
+        server_address,
+        server_port,
         intent: handshake.intent,
     };
 
