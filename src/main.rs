@@ -12,7 +12,7 @@
 //! Repository: <https://github.com/kauri-off/minecraft_mitm>
 
 use clap::Parser;
-use minecraft_protocol::packet::{RawPacket, UncompressedPacket};
+use mc_protocol::packet::{RawPacket, UncompressedPacket};
 use serde::Serialize;
 use serde_json::json;
 use std::sync::Arc;

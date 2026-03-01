@@ -1,5 +1,5 @@
 pub mod p774 {
-    use minecraft_protocol::{Packet, varint::VarInt};
+    use mc_protocol::{varint::VarInt, Packet};
 
     pub mod c2s {
         use super::*;
